@@ -14,8 +14,16 @@ mongoose.connect(url, {family: 4})
     })
 
 const phoneSchema = mongoose.Schema({
-    name: String, 
-    number: String
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    }, 
+    number: {
+        type: String, 
+        minLength: 8,
+        match: [/^\d{2,3}-\d+$/, 'Phone number must be in format XX-XXXXXXX or XXX-XXXXXX']
+    }
 })
 
 phoneSchema.set('toJSON', {

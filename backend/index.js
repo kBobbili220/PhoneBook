@@ -17,8 +17,6 @@ const requestLogger = (request, response, next) => {
 
 app.use(requestLogger)
 
-let people = []
-
 app.get('/api/persons', (request, response) => {
   Phone.find({}).then(results => {
     response.json(results)
@@ -58,7 +56,7 @@ app.delete('/api/persons/:id', (request, response) => {
   .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number){
@@ -70,9 +68,11 @@ app.post('/api/persons', (request, response) => {
     "number": body.number
   })
 
-  phone.save().then(savedPerson => {
+  phone.save()
+  .then(savedPerson => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -103,8 +103,10 @@ app.use(unknownEndpoint)
 const errorHandler = (error, request, response, next) => {
   console.log(error.message)
 
-  if (error.name == 'CastError'){
+  if (error.name === 'CastError'){
     response.status(400).send({error: 'malformatted id'})
+  } else if (error.name === 'ValidationError') {
+    response.status(400).json({ error: error.message })
   }
 
   next(error)
