@@ -50,9 +50,15 @@ const App = () => {
     } else {
       phoneService
         .create(addedPerson)
-        .then(returnedPerson => { setPersons(persons.concat(returnedPerson)) })
-      setMessage(`Added ${addedPerson.name}`)
-      setError(false)
+        .then(returnedPerson => { 
+          setPersons(persons.concat(returnedPerson))
+          setMessage(`Added ${addedPerson.name}`)
+          setError(false)
+        })
+        .catch(error => {
+          setMessage(`${error.response.data.error}`)
+          setError(true)
+        })
     }
     setNewName('')
     setNewNumber('')
